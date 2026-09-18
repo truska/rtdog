@@ -1024,8 +1024,11 @@ class FormField
          galleryDropzone.on("successmultiple", function (files, response) {
             handleUploadResponse(response);
          });
-         galleryDropzone.on("error", function (file, message) {
+         galleryDropzone.on("error", function (file, message, xhr) {
             uploadFailed = true;
+            if (xhr && xhr.responseText) {
+               try { message = JSON.parse(xhr.responseText); } catch (e) {}
+            }
             if (typeof message === "string") {
                responseElement.textContent = message;
             } else if (message && message.errors) {

@@ -77,6 +77,19 @@
          $destination_folder = $image->getDestinationFolderByForm($frm);
          $folder = dirname(__FILE__) . "/../../filestore/$destination_folder";
 
+         // Give the editor a usable configuration error instead of a generic
+         // Dropzone failure when a new CMS image folder has not been created
+         // on a deployment target.
+         $displayFolder = trim((string) $destination_folder, '/') . '/';
+         if (!is_dir($folder)) {
+            $errors[] = "CMS image-folder configuration error: '{$displayFolder}' does not exist on this server.";
+            continue;
+         }
+         if (!is_writable($folder)) {
+            $errors[] = "CMS image-folder permissions error: '{$displayFolder}' is not writable by the web server.";
+            continue;
+         }
+
          // get the file extension
          $file_ext = pathinfo($file_name, PATHINFO_EXTENSION);
          $file_ext = strtolower($file_ext);
@@ -132,6 +145,17 @@
                'md' => array('width' => $formField['md_max_width']),
                'lg' => array('width' => $formField['lg_max_width'])
             );
+            foreach (array_keys($scaled_sizes) as $sizeName) {
+               $sizeFolder = $folder . $sizeName;
+               if (!is_dir($sizeFolder)) {
+                  $errors[] = "CMS image-folder configuration error: '{$displayFolder}{$sizeName}/' does not exist on this server.";
+                  continue 2;
+               }
+               if (!is_writable($sizeFolder)) {
+                  $errors[] = "CMS image-folder permissions error: '{$displayFolder}{$sizeName}/' is not writable by the web server.";
+                  continue 2;
+               }
+            }
             $image->setScaledSizes($scaled_sizes);
          }
 
