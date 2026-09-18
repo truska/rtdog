@@ -1,0 +1,26 @@
+# Private credentials and server-only PHP configuration
+/private/
+
+# Server-managed or sensitive directories
+/.composer/
+/.ssh/
+/backup/
+/cgi-bin/
+/log/
+/ssl/
+/tmp/
+/webdav/
+
+# Runtime and user-generated web content
+/web/error/
+/web/filestore/
+/web/stats/
+/web/.htaccess
+/web/.user.ini
+**/.htaccess
+
+# Editor and operating-system noise
+*.code-workspace
+.vscode/
+*.log
+.DS_Store
