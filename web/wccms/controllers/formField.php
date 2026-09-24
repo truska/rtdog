@@ -1013,9 +1013,24 @@ class FormField
             if (typeof response === "string") {
                try { result = JSON.parse(response); } catch (e) { result = null; }
             }
-            if (!result || result.status !== "success") {
+
+            // The Dropzone success event means the request completed with HTTP
+            // success. Some versions invoke it without the parsed JSON body,
+            // so only turn that into a failed upload when the server has
+            // explicitly reported an error. Treating an empty callback as an
+            // error left successfully saved images off the page until a manual
+            // refresh.
+            if (result && result.status === "error") {
                uploadFailed = true;
-               responseElement.textContent = result && result.errors ? result.errors.join(" ") : "The image could not be uploaded.";
+               if (Array.isArray(result.errors)) {
+                  responseElement.textContent = result.errors.join(" ");
+               } else if (result.errors) {
+                  responseElement.textContent = String(result.errors);
+               } else if (result.message) {
+                  responseElement.textContent = result.message;
+               } else {
+                  responseElement.textContent = "The image could not be uploaded.";
+               }
             }
          }
          galleryDropzone.on("success", function (file, response) {
