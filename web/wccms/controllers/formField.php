@@ -156,6 +156,9 @@ class FormField
       $ContentValue = $this->escape_html($ContentValue);
 
       if ($this->rowformfield["allowedit"] == 'Yes') {
+         $maxLength = (!empty($this->rowformfield['max']) && (int) $this->rowformfield['max'] > 0)
+            ? " maxlength='" . (int) $this->rowformfield['max'] . "'"
+            : '';
          $output = "<div class='form-group {$this->rowformfield["label"]} {$this->itemclass}' >";
          $output .= "<label for='exampleInputEmail1'>{$this->rowformfield["label"]}";
 
@@ -168,7 +171,7 @@ class FormField
          }
 
          $output .= "</label>";
-         $output .= "<input type='{$this->rowfield["type"]}' style='font-weight:700;' class='form-control {$this->rowformfield["class"]}' id='exampleInputEmail1' name='{$this->rowformfield["name"]}' placeholder='{$this->rowformfield["placeholder"]}' value='{$ContentValue}' {$this->required}>";
+         $output .= "<input type='{$this->rowfield["type"]}' style='font-weight:700;' class='form-control {$this->rowformfield["class"]}' id='exampleInputEmail1' name='{$this->rowformfield["name"]}' placeholder='{$this->rowformfield["placeholder"]}' value='{$ContentValue}'{$maxLength} {$this->required}>";
          $output .= "<span class='comment'>{$this->rowformfield["comment"]}</span>";
          $output .= "</div>";
       } else {
