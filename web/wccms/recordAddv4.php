@@ -1,13 +1,11 @@
 <!-- START recordAddv4 -->
 <!-- WiteCanvasCMS ver 3.0 -->
 <?php
-
 error_reporting(1);
 include('setting/main-top-files.php'); // Added by salva TDR | 16.1.2023
-
-
 $TypeDebug = $prefs["prefCMSDebugOn"]; // Yes or No
 $PageType = 'Add'; // Add, Edit, Copy, Delete
+$addErrorMessage = null;
 
 // include('wideimage/lib/WideImage.php');
 
@@ -99,7 +97,18 @@ foreach ($_POST as $key => $value) {
 error_log("DEBUG ADD: insertTableContent will be called with " . count($updateData) . " fields");
 
 // --- Call insert with full context ---
-$insertResponse = $FORM->insertTableContent($updateData);
+try {
+	$insertResponse = $FORM->insertTableContent($updateData);
+} catch (Throwable $exception) {
+	error_log('CMS Add New insert failed for form ' . $formnumber . ': ' . $exception->getMessage());
+	$insertResponse = [
+		'status' => 'error',
+		'message' => 'Error adding record',
+		'error' => $exception->getMessage(),
+		'query' => '',
+		'recordID' => 0,
+	];
+}
 
 
 	$logtable = $table['name'];
@@ -107,25 +116,26 @@ $insertResponse = $FORM->insertTableContent($updateData);
 	$sqlquery = $insertResponse['query'];
 	$notes = $insertResponse['message'];
 	$username = $_SESSION["useremail"];
+	$recordId = (int) ($insertResponse['recordID'] ?? 0);
 
 	if ($insertResponse['status'] == 'error') {
 		$errors = array_merge($errors, $insertResponse);
-		saveLogV2($username, $action, $sqlquery, $logtable, 'FAIL', $notes, (int) $insertResponse['recordID']);
+		error_log('CMS Add New database failure for form ' . $formnumber . ': ' . DB::connection()->error);
+		saveLogV2($username, $action, $sqlquery, $logtable, 'FAIL', $notes, $recordId);
 	} else {
-		saveLogV2($username, $action, $sqlquery, $logtable, 'SUCCESS', $notes, (int) $insertResponse['recordID']);
+		saveLogV2($username, $action, $sqlquery, $logtable, 'SUCCESS', $notes, $recordId);
 	}
 
 	if (count($errors) > 0) {
-		echo "<pre>";
-		echo "Errors: ";
-		print_r($errors);
-		echo "</pre>";
-		die;
+		http_response_code(422);
+		$databaseError = trim((string) ($insertResponse['error'] ?? DB::connection()->error));
+		$failureDetail = $databaseError !== '' ? $databaseError : $notes;
+		$addErrorMessage = 'Could not add a record to “' . $form['title'] . '” (table: ' . $logtable . '). Database response: ' . $failureDetail;
+	} else {
+		echo "<script>
+		window.location='recordEditv{$prefs["prefCMSVer"]}.php?frm={$formnumber}&id={$insertResponse['recordID']}&insert={$insertResponse['status']}&msg={$insertResponse['message']}';
+	</script>";
 	}
-
-	echo "<script>
-   	window.location='recordEditv{$prefs["prefCMSVer"]}.php?frm={$formnumber}&id={$insertResponse['recordID']}&insert={$insertResponse['status']}&msg={$insertResponse['message']}';
-   </script>";
 }
 
 ?>
@@ -229,6 +239,9 @@ window.flatpickr = function(...args) {
 			<div class="content">
 				<?php
 				$infomark = "<i class='fas fa-info-circle' style='color:#28998B; padding-left:10px;'></i>";
+				if ($addErrorMessage !== null) {
+					echo "<div class='alert alert-danger' role='alert'>" . htmlspecialchars($addErrorMessage, ENT_QUOTES, 'UTF-8') . "</div>";
+				}
 				?>
 
 				<!-- FORM HERE -->

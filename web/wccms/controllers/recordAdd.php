@@ -219,6 +219,7 @@ class RecordAdd
             return [
                 'status' => 'error',
                 'message' => 'Error adding record',
+                'error' => mysqli_error(DB::connection()),
                 'query' => $query
             ];
         }

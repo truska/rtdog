@@ -179,6 +179,9 @@
           . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">DM (EXON1):</div><div class="col-5">' . $value('dm-exon1') . '</div></div></div>'
           . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">Elbow Score:</div><div class="col-5">' . $value('elbow') . '</div></div></div>'
           . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">DM (EXON2):</div><div class="col-5">' . $value('dm-exon2') . '</div></div></div>'
+          . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">VMD1:</div><div class="col-5">' . $value('vmd1') . '</div></div></div>'
+          . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">COI (KC):</div><div class="col-5">' . $value('coi') . '</div></div></div>'
+          . '<div class="col-12"><div class="row"><div class="col-sm-6">Histiocytic Sarcoma (HS) Test:</div><div class="col-sm-6">' . $value('h') . '</div></div></div>'
           . '</div></div>';
       }
 
@@ -188,6 +191,9 @@
         . '<div class="col-12"><div class="row"><div class="col-5">Elbow:</div><div class="col-7">' . $value('elbow') . '</div></div></div>'
         . '<div class="col-12"><div class="row"><div class="col-5">DM1:</div><div class="col-7">' . $value('dm-exon1') . '</div></div></div>'
         . '<div class="col-12"><div class="row"><div class="col-5">DM2:</div><div class="col-7">' . $value('dm-exon2') . '</div></div></div>'
+        . '<div class="col-12"><div class="row"><div class="col-5">VMD1:</div><div class="col-7">' . $value('vmd1') . '</div></div></div>'
+        . '<div class="col-12"><div class="row"><div class="col-5">COI (KC):</div><div class="col-7">' . $value('coi') . '</div></div></div>'
+        . '<div class="col-12"><div class="row"><div class="col-5">HS Test:</div><div class="col-7">' . $value('h') . '</div></div></div>'
         . '</div></div>';
     };
 
@@ -299,7 +305,7 @@
                         $sireDisplay = "To be Added";
                         if (!empty($rowproduct['sire'])) {
                             $sireId = intval($rowproduct['sire']);
-                            $sqlSire = "SELECT `id`,`name`,`slug`,`nameoverride`,`text`,`hipl`,`hipr`,`elbow`,`dm-exon1`,`dm-exon2` FROM products WHERE id = $sireId AND  archived = 0 LIMIT 1";
+                            $sqlSire = "SELECT `id`,`name`,`slug`,`nameoverride`,`text`,`hipl`,`hipr`,`elbow`,`dm-exon1`,`dm-exon2`,`vmd1`,`coi`,`h` FROM products WHERE id = $sireId AND  archived = 0 LIMIT 1";
                             $resSire = mysqli_query($conn, $sqlSire);
                             if ($resSire && mysqli_num_rows($resSire) > 0) {
                                 $rowSire = mysqli_fetch_assoc($resSire);
@@ -333,7 +339,7 @@
                         $damDisplay = "To be Added";
                         if (!empty($rowproduct['dam'])) {
                             $damId = intval($rowproduct['dam']);
-                            $sqlDam = "SELECT `id`,`name`,`slug`,`nameoverride`,`text`,`hipl`,`hipr`,`elbow`,`dm-exon1`,`dm-exon2` FROM products WHERE id = $damId AND archived = 0 LIMIT 1";
+                            $sqlDam = "SELECT `id`,`name`,`slug`,`nameoverride`,`text`,`hipl`,`hipr`,`elbow`,`dm-exon1`,`dm-exon2`,`vmd1`,`coi`,`h` FROM products WHERE id = $damId AND archived = 0 LIMIT 1";
                             $resDam = mysqli_query($conn, $sqlDam);
                             if ($resDam && mysqli_num_rows($resDam) > 0) {
                                 $rowDam = mysqli_fetch_assoc($resDam);
