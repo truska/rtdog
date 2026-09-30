@@ -631,6 +631,9 @@ class FormField
    // Case 19
    protected function renderTextAreaTinymceField()
    {
+	  // Older double-escaped saves display literal "\\r\\n" in TinyMCE.
+	  // Show those records with real line endings; saving will persist the repair.
+	  $contentValue = str_replace(["\\\\r\\\\n", "\\r\\n", "\\n", "\\r"], "\n", (string) $this->ContentValue);
       $output = "<div class='form-group {$this->itemclass}'> ";
       $output .= "<label for='exampleInputEmail1'>{$this->rowformfield["label"]}";
 
@@ -642,7 +645,7 @@ class FormField
          }
       }
       $output .= "</label>";
-      $output .= "<textarea name='{$this->rowformfield["name"]}' class='form-control tinymcetextarea {$this->rowformfield["class"]}' rows='10' >{$this->ContentValue}</textarea>";
+      $output .= "<textarea name='{$this->rowformfield["name"]}' class='form-control tinymcetextarea {$this->rowformfield["class"]}' rows='10' >{$contentValue}</textarea>";
       $output .= "<span class='comment'>{$this->rowformfield["comment"]}</span>";
       $output .= "</div>";
 

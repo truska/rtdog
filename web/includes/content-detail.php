@@ -254,7 +254,7 @@
         <h5 class="mb-3">Details</h5>
         <?php if (!empty($rowproduct['text'])): ?>
             <div class="mb-4">
-                <?php echo $rowproduct['text']; ?>
+                <?php echo str_replace(["\\\\r\\\\n", "\\r\\n", "\\n", "\\r"], "\n", $rowproduct['text']); ?>
                 <?php // echo $rowproduct['section']." | ".$rowproduct['ref']; ?>
             </div>
         <?php endif; ?>
@@ -659,7 +659,9 @@
       <div class="modal-body">
         <?php
         if (!empty($rowproduct['text1'])) {
-            echo $rowproduct['text1'];
+            // Values saved before the TinyMCE double-escape fix contain literal
+            // newline markers. Render them as whitespace rather than text.
+            echo str_replace(["\\\\r\\\\n", "\\r\\n", "\\n", "\\r"], "\n", $rowproduct['text1']);
         } else {
             echo "<p class='text-muted fst-italic'>No additional information available.</p>";
         }

@@ -349,8 +349,23 @@
 			}
 
 			foreach ($_POST as $key => $value) {
-				//error_log("DEBUG SAVE: starting field '$key' with raw value '$value'");
-				$updateData[$key] = securityCheck($value);
+				// TinyMCE fields are HTML, and updateTableContent() escapes values for
+				// its SQL query. Escaping them here as well turns real line endings into
+				// the visible text "\\r\\n" after the second escape.
+				$fieldMeta = null;
+				foreach ($form_fields as $formField) {
+					if (($formField['name'] ?? '') === $key) {
+						$fieldMeta = $formField;
+						break;
+					}
+				}
+
+				if ($fieldMeta && (int) ($fieldMeta['field'] ?? 0) === 19) {
+					// Repair legacy values when the record is next saved too.
+					$updateData[$key] = str_replace(["\\\\r\\\\n", "\\r\\n", "\\n", "\\r"], "\n", trim((string) $value));
+				} else {
+					$updateData[$key] = securityCheck($value);
+				}
 			}
 
 			//error_log("DEBUG SAVE: updateTableContent called with " . count($updateData) . " fields");
