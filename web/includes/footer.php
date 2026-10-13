@@ -51,6 +51,22 @@
         font-size: 0.95rem;
         color: #ddd;
     }
+    .footer .social-logo {
+        display: block;
+        width: 175px;
+        max-width: 100%;
+        height: auto;
+        margin-top: 0.75rem;
+        margin-left: auto;
+    }
+
+    @media (min-width: 768px) {
+        .footer .social-logo {
+            margin-top: 0;
+            padding-top: 3.5rem;
+        }
+    }
+
     .footer-bottom {
         border-top: 1px solid rgba(255,255,255,0.2);
         margin-top: 2rem;
@@ -124,6 +140,9 @@
                         echo "<a href='".$prefs['prefLinkedinURL']."' target='_blank'><i class='".$prefs['prefLinkedinImage']."'></i></a>";
                     }
                 ?>
+                <img class="social-logo"
+                     src="https://rtdog.witecanvas.com/filestore/images/content/md/3-2_home-page-welcome_1.png"
+                     alt="Royal Canin" loading="lazy">
             </div>
 
         </div>

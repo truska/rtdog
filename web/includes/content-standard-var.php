@@ -1,7 +1,8 @@
 <!-- START content-standard-var | <?php echo $rowcontent["title"]; ?> -->
 <?php
 $formid = 3;
-$sort = "id ASC";
+// Follow the CMS gallery ordering; use ID to resolve equal sort values.
+$sort = "`sort` ASC, `id` ASC";
 $usedlayout = '';
 echo "<hr>";
 echo "<div class='container parent-element'>" ;

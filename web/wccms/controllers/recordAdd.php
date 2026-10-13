@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/nullableFields.php';
 /**
  * recordAdd
  * 
@@ -152,6 +153,7 @@ class RecordAdd
     */
     function insertTableContent($data)
     {
+        $nullableFields = cmsNullableFields($this->table['name']);
         // --- get field metadata once ---
         $formFields = $this->getFormFields(true);
     
@@ -197,6 +199,12 @@ class RecordAdd
     
                 //error_log("Saving field $key (type $fieldType, datatype $fieldDatatype): $value");
     
+                if (cmsShouldSaveNull($nullableFields, $key, $value) ||
+                    ($fieldType === 16 && $value === '__NULL__' && isset($nullableFields[$key]))) {
+                    $query .= "NULL, ";
+                    continue;
+                }
+
                 $safeValue = mysqli_real_escape_string(DB::connection(), (string) $value);
                 $query .= "'$safeValue', ";
             }

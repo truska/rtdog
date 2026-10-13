@@ -181,7 +181,7 @@
           . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">DM (EXON2):</div><div class="col-5">' . $value('dm-exon2') . '</div></div></div>'
           . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">VMD1:</div><div class="col-5">' . $value('vmd1') . '</div></div></div>'
           . '<div class="col-12 col-sm-6"><div class="row"><div class="col-7">COI (KC):</div><div class="col-5">' . $value('coi') . '</div></div></div>'
-          . '<div class="col-12"><div class="row"><div class="col-sm-6">Histiocytic Sarcoma (HS) Test:</div><div class="col-sm-6">' . $value('hs') . '</div></div></div>'
+          . '<div class="col-12 col-sm-6">Histiocytic Sarcoma (HS) Test:</div><div class="col-12 col-sm-6">' . $value('hs') . '</div>'
           . '</div></div>';
       }
 

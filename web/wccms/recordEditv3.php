@@ -8,6 +8,7 @@ error_reporting(0);
 // error_reporting(1);
 
 include ('setting/main-top-files.php'); // Added by salva TDR | 9.12.2022
+    $_SESSION['gallery_visibility_csrf'] ??= bin2hex(random_bytes(32));
 
 // all now in header-code.php
 //	include("include/dbcon.php");
@@ -699,23 +700,27 @@ if ($_GET['insert']) { // New record added
 			}
 		};
 
-		function check(id, imgid) {
-			var data = id.id
-			if ($('#' + data).is(':checked')) {
-				state = "Yes";
-			} else {
-				state = "No";
-			}
-
-			$.ajax({
-				url: 'ajax.changeshowonweb.php',
-				type: 'post',
-				data: 'imgid=' + imgid + '&state=' + state,
-				success: function (msg) {
-					//alert(msg)
-				}
-			})
-		}
+        function check(input, imgid) {
+            var state = input.checked ? "Yes" : "No";
+            input.disabled = true;
+            $.ajax({
+                url: 'ajax.changeshowonweb.php',
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    imgid: imgid,
+                    state: state,
+                    formid: <?php echo (int) $dataform; ?>,
+                    recordid: <?php echo (int) $recordnumber; ?>,
+                    csrf: <?php echo json_encode($_SESSION['gallery_visibility_csrf']); ?>
+                }
+            }).fail(function () {
+                input.checked = !input.checked;
+                alert('Could not save Show on Web. Please reload and try again.');
+            }).always(function () {
+                input.disabled = false;
+            });
+        }
 	</script>
 
 	<style type="text/css">

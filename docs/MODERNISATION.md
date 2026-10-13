@@ -33,6 +33,14 @@
 3. Secure uploads/image processing and dynamic CMS database operations.
 4. Upgrade Bootstrap/assets separately, with visual checks of the public site and CMS.
 
+## Deferred fixes
+
+- [ ] Preserve PNG transparency during CMS uploads and image resizing. Check
+  `web/wccms/upload.php`, `web/wccms/upload_images.php`, and
+  `web/wccms/controllers/imageResizer.php`; preserve the alpha channel in all
+  generated sizes and verify with a transparent logo on the dark footer.
+  Recorded 13 October 2026; implementation deferred.
+
 ## Resolved legacy shop dependency
 
 The public site does not use shop preferences, text or modules. The obsolete
@@ -64,6 +72,20 @@ an existing MD5 password to a modern hash on its next successful login. Password
 reset tokens use `random_bytes()`, 2FA codes use `random_int()`, and successful
 CMS logins regenerate the session ID. Verify a real login, reset, and 2FA flow
 separately before production release.
+
+## CMS optional fields — 13 October 2026
+
+Apply `database/migrations/20261013_cms_optional_fields_nullable.sql` on each
+host alongside the Add/Edit changes. Optional fields in content, banners,
+news, sections, and testimonials now accept `NULL` and default to `NULL`.
+Fields required on Add, keys, and existing control defaults are preserved.
+Content defaults to layout 3 and may be assigned to a page after creation.
+Blank submitted values are saved as SQL `NULL` only for nullable columns;
+zero values are preserved and fields omitted from Edit remain unchanged.
+
+Applied locally and verified minimal content Add and Edit in a rolled-back
+transaction, including blank subheading, numeric padding, zero preservation,
+and layout/visibility/archive defaults. Staging still needs the migration.
 
 ## Deployment checklist
 

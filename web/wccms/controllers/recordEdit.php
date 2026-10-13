@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/nullableFields.php';
 /**
  * RecordEdit
  * 
@@ -366,6 +367,7 @@ public function getCss()
     */
    function updateTableContent($data , $formFields = [])
    {
+        $nullableFields = cmsNullableFields($this->tablename);
       $this->formFields = $formFields; // ✅ make form fields available  
 
       $query = "UPDATE `" . $this->tablename . "` SET ";
@@ -431,6 +433,11 @@ public function getCss()
                  // datatype = 1 => raw; falls through unchanged (we already handled placeholder/blank)
              }
      
+             if (cmsShouldSaveNull($nullableFields, $key, $value)) {
+                 $query .= "`$key` = NULL, ";
+                 continue;
+             }
+
              // A select option may explicitly represent an unknown value.
              // Store it as database NULL rather than the sentinel text.
              if ($fieldType === 16 && $value === '__NULL__') {
@@ -441,7 +448,7 @@ public function getCss()
              // Optional number fields (such as health scores) are submitted as
              // an empty string when unset.  In strict MySQL mode that cannot be
              // written to an integer column, so retain the intended unknown value.
-             if ($fieldType === 9 && $value === '') {
+             if ($fieldType === 9 && $value === '' && isset($nullableFields[$key])) {
                  $query .= "`$key` = NULL, ";
                  continue;
              }
