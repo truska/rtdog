@@ -79,49 +79,8 @@
     <div class="container">
         <div class="row">
 
-            <!-- Footer columns 1 + 2: Horses for Sale -->
-            <div class="col-12 col-md-6 mb-4 mb-md-0">
-
-                <h4 class="text-start">Dogs for Sale</h4>
-
-                <div class="row">
-                    <?php
-                        $selectforsale = "SELECT * FROM `products` 
-                            WHERE `forsale` = 'Yes' 
-                            AND `showonweb` = 'Yes' 
-                            ORDER BY `name`";
-
-                        $queryforsale = mysqli_query($conn, $selectforsale);
-
-                        $horses = [];
-						$productRoute = getProductDetailRoute($conn);
-
-                        while ($rowforsale = mysqli_fetch_assoc($queryforsale)) {
-                            $horses[] = $rowforsale;
-                        }
-
-                        // array_chunk() requires a positive chunk length.  A new
-                        // dog site has no sale records yet, so leave this area empty.
-                        $half = max(1, (int) ceil(count($horses) / 2));
-                        $horseCols = array_chunk($horses, $half);
-
-                        foreach ($horseCols as $horseCol) {
-                            echo "<div class='col-6'>";
-                                foreach ($horseCol as $rowforsale) {
-                                    echo "<p>";
-                                        echo "<i class='fa-solid fa-gavel text-warning'></i> ";
-                                        echo "<a href='{$baseURL}/{$productRoute}/{$rowforsale["id"]}/{$rowforsale["slug"]}'>{$rowforsale["name"]}</a>";
-                                    echo "</p>";
-                                }
-                            echo "</div>";
-                        }
-                    ?>
-                </div>
-
-            </div>
-
-            <!-- Footer column 3: contact -->
-            <div class="col-6 col-md-3 mb-4 mb-md-0 contact-info">
+            <!-- Footer contact column -->
+            <div class="col-6 mb-4 mb-md-0 contact-info">
                 <h4>Find Us</h4>
 
                 <p>
@@ -147,8 +106,8 @@
                 <?php endif; ?>
             </div>
 
-            <!-- Footer column 4: social -->
-            <div class="col-6 col-md-3 social-icons text-md-end">
+            <!-- Footer social column -->
+            <div class="col-6 social-icons text-md-end">
                 <h4>Find us in Socials</h4>
 
                 <?php

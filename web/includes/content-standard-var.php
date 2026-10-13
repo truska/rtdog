@@ -25,6 +25,15 @@ echo "<div class='container parent-element'>" ;
 			$hasCol2 = ($rowcontent["text2"] || $rowcontent["image2"] || $rowcontent["subheading2"]);
 			$hasCol3 = ($rowcontent["text3"] || $rowcontent["image3"] || $rowcontent["subheading3"]);
 
+            // Gallery records belong to the last column and count towards layout.
+            $galleryResult = mysqli_query($conn, "SELECT 1 FROM `gallery` WHERE `form_id` = '$formid' AND `record_id` = '" . (int) $rowcontent['id'] . "' AND `showonweb` = 'Yes' AND `archived` = 0 LIMIT 1");
+            $hasGallery = $galleryResult && mysqli_num_rows($galleryResult) > 0;
+            if ($galleryResult) mysqli_free_result($galleryResult);
+
+            if ($hasGallery && !$hasCol2 && !$hasCol3) {
+                $hasCol2 = true;
+            }
+
 			$colCount = $hasCol1 + $hasCol2 + $hasCol3;
 
 			// --- Render by layout ---

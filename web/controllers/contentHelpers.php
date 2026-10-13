@@ -195,11 +195,16 @@ function renderContentColumn($rowcontent, $colIndex, $baseURL, $conn, $formid, $
     $image      = $rowcontent["image" . ($colIndex ?: "")] ?? '';
     $text       = $rowcontent["text" . ($colIndex ?: "")] ?? '';
 
-    if (!$subheading && !$image && !$text) return;
+    if (!$subheading && !$image && !$text && !$includeGallery) return;
 
     echo "<div class='content-col col'>";
     if ($subheading) echo "<h3>{$subheading}</h3>";
-    if ($image) echo "<img src='{$baseURL}/filestore/images/content/lg/{$image}' class='img-fluid mb-3' alt=''>";
+    if ($image) {
+        $imageLg = htmlspecialchars($baseURL . getValidImagePath($image, 'content', 'lg'), ENT_QUOTES);
+        $imageMd = htmlspecialchars($baseURL . getValidImagePath($image, 'content', 'md'), ENT_QUOTES);
+        $imageAlt = htmlspecialchars($subheading ?: ($rowcontent['heading'] ?? ''), ENT_QUOTES);
+        echo "<a class='MagicZoom mb-3' id='content-image-{$rowcontent['id']}{$colIndex}' data-options='zoomPosition: inner' href='{$imageLg}'><img src='{$imageMd}' class='img-fluid' alt='{$imageAlt}'></a>";
+    }
     if ($text) echo $text;
     // Content blocks can have a normal image as well as an optional gallery.
     // Do not add a placeholder beneath the normal image when no gallery exists.
