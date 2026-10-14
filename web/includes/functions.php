@@ -1,6 +1,22 @@
 <!-- START functions rxs -->
 <?php
 
+/** Decode legacy quote escaping in CMS names before HTML escaping. */
+function decodeCmsName($name): string
+{
+    $name = (string) ($name ?? '');
+    do {
+        $previous = $name;
+        $name = str_replace(["\\'", '\\"'], ["'", '"'], $name);
+    } while ($name !== $previous);
+    return $name;
+}
+
+function escapeCmsName($name): string
+{
+    return htmlspecialchars(decodeCmsName($name), ENT_QUOTES, 'UTF-8');
+}
+
 function loadPrefs($conn)
 {
 	$selectprefs = "SELECT `name`, `value` FROM `preferences` ORDER BY `prefCat` ";

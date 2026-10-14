@@ -82,17 +82,17 @@
 		}
 
 
-	$titletag = preg_replace('/<[^>]+>/', ' ', $titletag);
+	$titletag = preg_replace('/<[^>]+>/', ' ', decodeCmsName($titletag));
 	$titletag = preg_replace('/\s+/', ' ', trim($titletag));
-	echo "<title>" . $titletag. "</title>" ;
+	echo "<title>" . htmlspecialchars($titletag, ENT_QUOTES, 'UTF-8'). "</title>" ;
 
-	$metadescription = preg_replace('/<[^>]+>/', ' ', $metadescription);
+	$metadescription = preg_replace('/<[^>]+>/', ' ', decodeCmsName($metadescription));
 	$metadescription = preg_replace('/\s+/', ' ', trim($metadescription));
-	echo "<meta name='description' content='" . strip_tags($metadescription) . "'>" ;
+	echo "<meta name='description' content='" . htmlspecialchars(strip_tags($metadescription), ENT_QUOTES, 'UTF-8') . "'>" ;
 
-	$metakeywords = preg_replace('/<[^>]+>/', ' ', $metakeywords);
+	$metakeywords = preg_replace('/<[^>]+>/', ' ', decodeCmsName($metakeywords));
 	$metakeywords = preg_replace('/\s+/', ' ', trim($metakeywords));
-	echo "<meta name='keywords' content='" . strip_tags($metakeywords) . "'>" ;
+	echo "<meta name='keywords' content='" . htmlspecialchars(strip_tags($metakeywords), ENT_QUOTES, 'UTF-8') . "'>" ;
 
 ?>
 

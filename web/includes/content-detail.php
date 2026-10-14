@@ -158,9 +158,9 @@
       $forsale = "<i class='fa-solid fa-gavel text-warning'></i>" ;
     }
       //Set Name
-      $name = $rowproduct['name'] ;
+      $name = decodeCmsName($rowproduct['name']);
       if($rowproduct['nameoverride']){
-        $name = $rowproduct['nameoverride'] ;
+        $name = decodeCmsName($rowproduct['nameoverride']);
       }
 
     $imagetitledefault = $name ;
@@ -208,7 +208,7 @@
         $resSire = mysqli_query($conn, $sqlSire);
         if ($resSire && mysqli_num_rows($resSire) > 0) {
             $rowSire = mysqli_fetch_assoc($resSire);
-            $sireName = htmlspecialchars($rowSire['name']);          
+            $sireName = escapeCmsName($rowSire['name']);
             $sireSlug = htmlspecialchars($rowSire['slug']);
             $sireLink = $baseURL."/".$productRoute."/".$sireId."/".$sireSlug;
         }
@@ -220,7 +220,7 @@
         $resDam = mysqli_query($conn, $sqlDam);
         if ($resDam && mysqli_num_rows($resDam) > 0) {
             $rowDam = mysqli_fetch_assoc($resDam);
-            $damName = htmlspecialchars($rowDam['name']);
+            $damName = escapeCmsName($rowDam['name']);
             $damSlug = htmlspecialchars($rowDam['slug']);
             $damLink = $baseURL."/".$productRoute."/".$damId."/".$damSlug;
         }
@@ -240,7 +240,7 @@
     <!-- Horse Name -->
     <div class="row mb-3">
         <div class="col-12 text-center">
-            <h1 class="fw-bold mb-0"><?php echo stripslashes(htmlspecialchars($name))."&nbsp;&nbsp;".$forsale; ?></h1>
+            <h1 class="fw-bold mb-0"><?php echo htmlspecialchars($name, ENT_QUOTES, 'UTF-8')."&nbsp;&nbsp;".$forsale; ?></h1>
         </div>
     </div>
 
@@ -309,9 +309,9 @@
                             $resSire = mysqli_query($conn, $sqlSire);
                             if ($resSire && mysqli_num_rows($resSire) > 0) {
                                 $rowSire = mysqli_fetch_assoc($resSire);
-                                $sireDisplay = stripslashes(htmlspecialchars($rowSire['name']));
+                                $sireDisplay = escapeCmsName($rowSire['name']);
                                 if($rowSire['nameoverride']) {
-                                  $sireDisplay = htmlspecialchars($rowSire['nameoverride']);
+                                  $sireDisplay = escapeCmsName($rowSire['nameoverride']);
                                 } ;
                                 $sireSlug = htmlspecialchars($rowSire['slug']);
                             }
@@ -343,9 +343,9 @@
                             $resDam = mysqli_query($conn, $sqlDam);
                             if ($resDam && mysqli_num_rows($resDam) > 0) {
                                 $rowDam = mysqli_fetch_assoc($resDam);
-                                $damDisplay = stripslashes(htmlspecialchars($rowDam['name']));
+                                $damDisplay = escapeCmsName($rowDam['name']);
                                 if($rowDam['nameoverride']) {
-                                  $damDisplay = htmlspecialchars($rowDam['nameoverride']);
+                                  $damDisplay = escapeCmsName($rowDam['nameoverride']);
                                 } ;
                                 $damSlug = htmlspecialchars($rowDam['slug']);
                             }
@@ -429,7 +429,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="pedigreeModalLabel">
-          Pedigree for <?php echo htmlspecialchars($rowproduct['name']); ?>
+          Pedigree for <?php echo escapeCmsName($rowproduct['name']); ?>
         </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -453,7 +453,7 @@
 
             $horse = [
                 'id'   => $rowproduct['id'],
-                'name' => stripslashes(htmlspecialchars($rowproduct['name'])),
+                'name' => escapeCmsName($rowproduct['name']),
                 'link' => $baseURL . '/' . $productRoute . '/' . $rowproduct['id'] . '/' . $productSlug,
                 'sire' => $rowproduct['sire'],
                 'dam'  => $rowproduct['dam'],
@@ -652,7 +652,7 @@
     <div class="modal-content">
       <div class="modal-header bg-info text-white">
         <h5 class="modal-title" id="moreInfoModalLabel">
-          More Information – <?php echo htmlspecialchars($rowproduct['name']); ?>
+          More Information – <?php echo escapeCmsName($rowproduct['name']); ?>
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>

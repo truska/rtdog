@@ -49,16 +49,16 @@ $productRoute = getProductDetailRoute($conn);
 
 while ($row = mysqli_fetch_assoc($result)) {
     $productId   = $row['id'];
-    $productName = htmlspecialchars($row['name']);
-    $productNameOverride = htmlspecialchars($row['nameoverride']);
+    $productName = escapeCmsName($row['name']);
+    $productNameOverride = escapeCmsName($row['nameoverride']);
     $productText = htmlspecialchars($row['summarytext']);
     $productSlug = htmlspecialchars($row['slug']);
     $productForSale = htmlspecialchars($row['forsale']);
     $link        = $baseURL . "/" . $productRoute . "/" . $productId . "/" . $productSlug;
 
         //Set Name
-        if($productNameOverride = $row['nameoverride']){
-            $productName = $row['nameoverride'] ;
+        if ($productNameOverride !== '') {
+            $productName = $productNameOverride;
         }
 
 

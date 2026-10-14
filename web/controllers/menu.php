@@ -173,7 +173,7 @@ function fetchDynamicMenuItems($conn, $item, $baseURL) {
     while ($row = mysqli_fetch_assoc($result)) {
         $id   = $row['id'];
         $slug = $row['slug'];
-        $label = htmlspecialchars($row['name']);
+        $label = escapeCmsName($row['name']);
         $forsale = $hasForSale ? ($row['forsale'] ?? 'No') : 'No';
 
         // 🔸 Build URL path
@@ -249,7 +249,7 @@ function renderLevel1($conn, $baseURL, $node1) {
     }
 
     $children     = $node1['children'];
-    $name         = htmlspecialchars($item['name'] ?? '');
+    $name         = escapeCmsName($item['name'] ?? '');
     $extendYes    = (isset($item['extend']) && strcasecmp($item['extend'], 'Yes') === 0);
     $dynPayload   = fetchDynamicMenuItems($conn, $item, $baseURL);
     $hasDyn       = !empty($dynPayload['items']);
@@ -341,7 +341,7 @@ function renderLevel2($conn,$baseURL,$node2){
        return;
    }
 
-   $name       = htmlspecialchars($item['name'] ?? '');
+   $name       = escapeCmsName($item['name'] ?? '');
 
 
 
@@ -404,7 +404,7 @@ function renderLevel3($conn,$baseURL,$node3){
         return;
     }
 
-    $name = htmlspecialchars($item['name']);
+    $name = escapeCmsName($item['name']);
     $href = buildLink($conn,$item,$baseURL);
     echo "<li><a class='dropdown-item' href='$href'>$name</a></li>";
 }
@@ -416,7 +416,7 @@ function renderLevel3($conn,$baseURL,$node3){
  */
 function renderMenuSearch($conn, $baseURL, $item) {
     $action = buildLink($conn, $item, $baseURL);
-    $placeholder = !empty($item['name']) ? htmlspecialchars($item['name']) : 'Search...';
+    $placeholder = !empty($item['name']) ? escapeCmsName($item['name']) : 'Search...';
     ?>
     <form class="d-flex menu-search-form" role="search" method="get" action="<?= $action ?>">
         <input class="form-control form-control-sm me-2" 

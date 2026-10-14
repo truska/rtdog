@@ -254,7 +254,7 @@ function getHorse($conn, $baseURL, $id, $level = 1, $maxGen = 4) {
 
     return [
         'id'   => $row['id'],
-        'name' => htmlspecialchars($row['name']),
+        'name' => escapeCmsName($row['name']),
         'link' => $link,
         'sire' => $row['sire'],
         'dam'  => $row['dam'],
