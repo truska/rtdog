@@ -79,6 +79,9 @@ while ($litter = $litters ? mysqli_fetch_assoc($litters) : null) {
         <?php if ($heading !== ''): ?>
             <h2 class="mb-3"><?= htmlspecialchars($heading) ?></h2>
         <?php endif; ?>
+        <?php if (($litter['reserved'] ?? 'No') === 'Yes'): ?>
+            <h4 class="mb-3">All Puppies Reserved</h4>
+        <?php endif; ?>
         <?php if (!empty($litter['text'])): ?>
             <div class="mb-3"><?= $litter['text'] ?></div>
         <?php endif; ?>
