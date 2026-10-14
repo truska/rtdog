@@ -30,26 +30,39 @@ if (!empty($_GET['frm']) && !empty($_GET['id'])) {
             die('The record you are trying to copy no longer exists. Please return to the content list and select an existing record.');
          }
 
-         $sql = "INSERT INTO " . $table['name'] . " SET ";
+         $assignments = [];
+         $values = [];
          foreach ($record as $key => $value) {
-            if ($key != 'id') {
-               if ($key == 'showonweb') { // If the field is the showonweb, we set it to No
-                  $value = 'No';
-               }
-               // Preserve NULL and content whitespace when copying database values.
-               $sqlValue = $value === null
-                  ? 'NULL'
-                  : "'" . mysqli_real_escape_string($conn, $value) . "'";
-               $sql .= "`$key` = $sqlValue, "; 
+            if ($key === 'id') {
+               continue;
             }
+            $assignments[] = '`' . str_replace('`', '``', $key) . '` = ?';
+            $values[] = $key === 'showonweb' ? 'No' : $value;
          }
-         $sql = substr($sql, 0, -2); // remove last comma
+         $sql = 'INSERT INTO `' . str_replace('`', '``', $table['name'])
+            . '` SET ' . implode(', ', $assignments);
 
+         $statement = null;
          try {
-            $response = DB::query($sql);
-         } catch (mysqli_sql_exception $exception) {
+            $statement = mysqli_prepare($conn, $sql);
+            if (!$statement) {
+               throw new RuntimeException(mysqli_error($conn));
+            }
+            // MySQLi sends PHP NULL as SQL NULL, including for integer columns.
+            if (!mysqli_stmt_bind_param($statement, str_repeat('s', count($values)), ...$values)) {
+               throw new RuntimeException(mysqli_stmt_error($statement));
+            }
+            $response = mysqli_stmt_execute($statement);
+            if (!$response) {
+               throw new RuntimeException(mysqli_stmt_error($statement));
+            }
+         } catch (mysqli_sql_exception | RuntimeException $exception) {
             error_log('Record copy failed for form ' . $formID . ', record ' . $recordID . ': ' . $exception->getMessage());
             $response = false;
+         } finally {
+            if ($statement) {
+               mysqli_stmt_close($statement);
+            }
          }
          // Capture this insert's ID before writing the audit log.
          $recordnumber = $response ? mysqli_insert_id($conn) : 0;
@@ -60,24 +73,32 @@ if (!empty($_GET['frm']) && !empty($_GET['id'])) {
 
          $logtable = $table['name'];
          $action = "Copy Record ".$recordID." in Form " . $formID;
-         $sqlquery = mysqli_real_escape_string($conn, $sql);
+         $sqlquery = $sql; // saveLogV2 escapes the query itself.
          $notes = "Making a COPY of Record ".$recordID."";
          $username = $_SESSION["useremail"];
 
 
 
          if ($response) {
-            saveLogV2($username, $action, $sqlquery, $logtable, 'SUCCESS', $notes, $recordnumber);
-      
+            try {
+               saveLogV2($username, $action, $sqlquery, $logtable, 'SUCCESS', $notes, $recordnumber);
+            } catch (mysqli_sql_exception $exception) {
+               // The copy already exists: still take the user to its edit page.
+               error_log('Record copy audit failed for new record ' . $recordnumber . ': ' . $exception->getMessage());
+            }
+
             echo "<script>
                window.location='recordEditv4.php?frm=$formID&id=$recordnumber&copy=success'
             </script>";
          } else {
-            saveLogV2($username, $action, $sqlquery, $logtable, 'FAIL', $notes, 0);
-
-            echo "<script>
-               window.location='recordViewv".$prefs["prefCMSVer"].".php?frm=$formID&copy=error'
-            </script>";
+            try {
+               saveLogV2($username, $action, $sqlquery, $logtable, 'FAIL', $notes, 0);
+            } catch (mysqli_sql_exception $exception) {
+               error_log('Record copy failure audit failed: ' . $exception->getMessage());
+            }
+            http_response_code(500);
+            echo '<p>The record could not be copied. Please return to the content list. The failure has been logged for investigation.</p>';
+            echo '<p><a href="recordViewv4.php?frm=' . (int) $formID . '">Return to content list</a></p>';
          }
       } else {
          die('Error in the table');
