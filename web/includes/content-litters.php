@@ -37,23 +37,19 @@ if (!empty($rowcontent['text'])) {
 echo '</div>';
 echo '</div>';
 
-$selectedLitterId = isset($segs[1]) && ctype_digit((string) $segs[1]) ? (int) $segs[1] : 0;
-$selectedLitterWhere = $selectedLitterId > 0 ? " AND l.id = {$selectedLitterId}" : '';
-
 $sql = "SELECT l.*,
                s.id AS sire_product_id, s.slug AS sire_slug, COALESCE(NULLIF(s.nameoverride, ''), s.name) AS sire_name,
                d.id AS dam_product_id, d.slug AS dam_slug, COALESCE(NULLIF(d.nameoverride, ''), d.name) AS dam_name
         FROM litters l
         LEFT JOIN products s ON s.id = l.sire AND s.archived = 0
         LEFT JOIN products d ON d.id = l.dam AND d.archived = 0
-        WHERE l.showonweb = 'Yes' AND l.archived = 0{$selectedLitterWhere}
-        ORDER BY l.dob DESC, l.id DESC";
+        WHERE l.showonweb = 'Yes' AND l.archived = 0
+        ORDER BY (l.dob IS NULL) DESC, l.dob DESC, l.id DESC
+        LIMIT 4";
 $litters = mysqli_query($conn, $sql);
 
 if ($litters && mysqli_num_rows($litters) === 0) {
-    echo $selectedLitterId > 0
-        ? "<p class='mt-4 text-muted'>This litter is not available.</p>"
-        : "<p class='mt-4 text-muted'>There are no litters to show at present.</p>";
+    echo "<p class='mt-4 text-muted'>There are no litters to show at present.</p>";
 }
 
 while ($litter = $litters ? mysqli_fetch_assoc($litters) : null) {

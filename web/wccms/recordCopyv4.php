@@ -1,10 +1,9 @@
-<!-- START recordCopyv4 -->
 <?php
 error_reporting(1);
 
 include('setting/main-top-files.php'); // Added by salva TDR | 16.03.2023
 
-if ($_GET['frm'] && $_GET['id']) {
+if (!empty($_GET['frm']) && !empty($_GET['id'])) {
    if (!$formID = securityCheck($_GET['frm'], 'number')) {
       die('Error in the form'); // If the user try to insert something different from a number, we kill the script
    }
@@ -26,19 +25,34 @@ if ($_GET['frm'] && $_GET['id']) {
          WHERE id = $recordID";
          $record = mysqli_fetch_array(DB::query($sql), MYSQLI_ASSOC);
 
+         if (!$record) {
+            http_response_code(404);
+            die('The record you are trying to copy no longer exists. Please return to the content list and select an existing record.');
+         }
+
          $sql = "INSERT INTO " . $table['name'] . " SET ";
          foreach ($record as $key => $value) {
             if ($key != 'id') {
                if ($key == 'showonweb') { // If the field is the showonweb, we set it to No
                   $value = 'No';
                }
-               $value = securityCheck($value); 
-               $sql .= "`$key` = '$value', "; 
+               // Preserve NULL and content whitespace when copying database values.
+               $sqlValue = $value === null
+                  ? 'NULL'
+                  : "'" . mysqli_real_escape_string($conn, $value) . "'";
+               $sql .= "`$key` = $sqlValue, "; 
             }
          }
          $sql = substr($sql, 0, -2); // remove last comma
 
-         $response = DB::query($sql);
+         try {
+            $response = DB::query($sql);
+         } catch (mysqli_sql_exception $exception) {
+            error_log('Record copy failed for form ' . $formID . ', record ' . $recordID . ': ' . $exception->getMessage());
+            $response = false;
+         }
+         // Capture this insert's ID before writing the audit log.
+         $recordnumber = $response ? mysqli_insert_id($conn) : 0;
 
          // $action = "Copy Record ". $recordID ." | " . $table['name'];
          // $logtable = $tb;
@@ -53,13 +67,6 @@ if ($_GET['frm'] && $_GET['id']) {
 
 
          if ($response) {
-            $query = "SELECT id from " . $table['name'] . " 
-            ORDER BY id DESC 
-            LIMIT 1";
-            // set last id
-            $recordnumber = mysqli_fetch_array(DB::query($query), MYSQLI_ASSOC)['id'];
-
-            $errors = array_merge($errors, $insertResponse);
             saveLogV2($username, $action, $sqlquery, $logtable, 'SUCCESS', $notes, $recordnumber);
       
             echo "<script>
@@ -75,6 +82,9 @@ if ($_GET['frm'] && $_GET['id']) {
       } else {
          die('Error in the table');
       }
+   } else {
+      http_response_code(404);
+      die('Error in the form');
    }
 } else {
    die('Error in the params');

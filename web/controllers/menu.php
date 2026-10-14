@@ -98,27 +98,8 @@ function fetchDynamicMenuItems($conn, $item, $baseURL) {
     $tableName = $tableRow['name'];
     $out['label'] = $tableName;
 
-    // Litters are presented together on their listing page rather than having
-    // individual detail routes. The dropdown contains only opted-in litters.
+    // All eligible litters appear together on the page, with no litter dropdown.
     if ($tableName === 'litters') {
-        $pageSlug = getPageSlug($conn, $item['page']);
-        $listingUrl = rtrim($baseURL, '/') . '/' . $pageSlug;
-
-        $result = mysqli_query($conn, "SELECT id, title FROM litters WHERE showonweb = 'Yes' AND archived = 0 AND showonmenu = 'Yes' ORDER BY dob DESC, id DESC");
-        if ($result) {
-            while ($row = mysqli_fetch_assoc($result)) {
-                $title = trim((string) $row['title']);
-                if ($title === '') {
-                    continue;
-                }
-                $out['items'][] = [
-                    'name' => htmlspecialchars($title),
-                    'href' => $listingUrl . '/' . (int) $row['id'],
-                    'forsale' => 'No',
-                ];
-            }
-        }
-
         return $out;
     }
 
