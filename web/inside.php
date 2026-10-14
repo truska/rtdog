@@ -31,10 +31,6 @@
 				{	
 					include("includes/footer-debug.php");
 				}
-				else
-				{
-					echo "<h6>".$_SERVER['REMOTE_ADDR']." = ".$prefs['prefTruskaIP']."<h6>" ;
-				}
 		
 			if (
 				$_SERVER['REMOTE_ADDR'] == $prefs['prefClientIP']
