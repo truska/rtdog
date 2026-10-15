@@ -336,7 +336,7 @@ window.flatpickr = function(...args) {
 				<!-- Trigger the modal with a button -->
 				<?php
 					$selectform2 = "SELECT * FROM `gallery`";
-					$selectform3 = "SELECT * FROM `folder_name`";
+					$selectform3 = "SELECT DISTINCT `folder_name` AS `name` FROM `gallery` WHERE `archived` = 0 ORDER BY `folder_name`";
 					$queryform3 = mysqli_query($conn, $selectform3);
 					$queryform0 = mysqli_query($conn, $selectform2);
 				?>
@@ -376,7 +376,7 @@ window.flatpickr = function(...args) {
 													$ids[] = $row1["id"];
 													$date1 = date('F-Y', strtotime($date1));
 													$arr[] = $date1;
-													$images[] = $row1["image1"];
+													$images[] = $row1["image"];
 													$dates[] = $row1["date"];
 													$folders[] = $row1["folder_name"];
 												}
