@@ -355,6 +355,12 @@ function imgResize($path, $w, $h)
    }
 
    $img_base = imagecreatetruecolor($rs_width, $rs_height);
+   // Preserve PNG alpha when resizing legacy CMS uploads.
+   if ($x['mime'] === 'image/png') {
+      imagealphablending($img_base, false);
+      imagesavealpha($img_base, true);
+      imagefill($img_base, 0, 0, imagecolorallocatealpha($img_base, 0, 0, 0, 127));
+   }
    imagecopyresized($img_base, $img, 0, 0, 0, 0, $rs_width, $rs_height, $width, $height);
 
    $path_info = pathinfo($path);

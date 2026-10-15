@@ -70,7 +70,7 @@ class ImageResizer
       if ($this->defaultResize > 0 && $originalWidth > $this->defaultResize) { // Resize image
          $resizeWidth = $this->defaultResize; // px
          $resizeHeight = intval($resizeWidth / $ratio);
-         $resizeImage = imagecreatetruecolor($resizeWidth, $resizeHeight);
+         $resizeImage = $this->createResizeCanvas($resizeWidth, $resizeHeight, $originalSize["mime"]);
          $originalImage = $this->getOriginalImage($this->originalImage);
          imagecopyresampled($resizeImage, $originalImage, 0, 0, 0, 0, $resizeWidth, $resizeHeight, $originalWidth, $originalHeight);
          if (!$this->saveImage($resizeImage, $folder . $name, $originalSize["mime"])) {
@@ -114,7 +114,7 @@ class ImageResizer
       ) {
          $xsWidth = $this->scaled_sizes['xs']['width']; // px
          $xsHeight = intval($xsWidth / $ratio);
-         $xsImage = imagecreatetruecolor($xsWidth, $xsHeight);
+         $xsImage = $this->createResizeCanvas($xsWidth, $xsHeight, $originalSize["mime"]);
          $originalImage = $this->getOriginalImage($this->originalImage);
          imagecopyresampled($xsImage, $originalImage, 0, 0, 0, 0, $xsWidth, $xsHeight, $originalWidth, $originalHeight);
          if (!$this->saveImage($xsImage, $folder . "xs/" . $name, $originalSize["mime"])) {
@@ -141,7 +141,7 @@ class ImageResizer
       ) {
          $smallWidth = $this->scaled_sizes['sm']['width']; // px
          $smallHeight = intval($smallWidth / $ratio);
-         $smallImage = imagecreatetruecolor($smallWidth, $smallHeight);
+         $smallImage = $this->createResizeCanvas($smallWidth, $smallHeight, $originalSize["mime"]);
          $originalImage = $this->getOriginalImage($this->originalImage);
          imagecopyresampled($smallImage, $originalImage, 0, 0, 0, 0, $smallWidth, $smallHeight, $originalWidth, $originalHeight);
          if (!$this->saveImage($smallImage, $folder . "sm/" . $name, $originalSize["mime"])) {
@@ -168,7 +168,7 @@ class ImageResizer
       ) {
          $normalWidth = $this->scaled_sizes['md']['width']; // px
          $normalHeight = intval($normalWidth / $ratio);
-         $normalImage = imagecreatetruecolor($normalWidth, $normalHeight);
+         $normalImage = $this->createResizeCanvas($normalWidth, $normalHeight, $originalSize["mime"]);
          $originalImage = $this->getOriginalImage($this->originalImage);
          imagecopyresampled($normalImage, $originalImage, 0, 0, 0, 0, $normalWidth, $normalHeight, $originalWidth, $originalHeight);
          if (!$this->saveImage($normalImage, $folder . "md/" . $name, $originalSize["mime"])) {
@@ -199,7 +199,7 @@ class ImageResizer
             $largeWidth = $this->scaled_sizes['lg']['width']; // px
             $largeHeight = intval($largeWidth / $ratio);
          }
-         $largeImage = imagecreatetruecolor($largeWidth, $largeHeight);
+         $largeImage = $this->createResizeCanvas($largeWidth, $largeHeight, $originalSize["mime"]);
          $originalImage = $this->getOriginalImage($this->originalImage);
          imagecopyresampled($largeImage, $originalImage, 0, 0, 0, 0, $largeWidth, $largeHeight, $originalWidth, $originalHeight);
          if (!$this->saveImage($largeImage, $folder . "lg/" . $name, $originalSize["mime"])) {
@@ -247,6 +247,19 @@ class ImageResizer
       return $name;
    }
 
+   private function createResizeCanvas($width, $height, $mime)
+   {
+      $canvas = imagecreatetruecolor($width, $height);
+      if ($mime === 'image/png') {
+         // Copy alpha values rather than blending transparent pixels onto black.
+         imagealphablending($canvas, false);
+         imagesavealpha($canvas, true);
+         $transparent = imagecolorallocatealpha($canvas, 0, 0, 0, 127);
+         imagefill($canvas, 0, 0, $transparent);
+      }
+      return $canvas;
+   }
+
    private function getOriginalImage($image)
    {
       $mime = getimagesize($image)["mime"];
@@ -268,6 +281,7 @@ class ImageResizer
          case "image/jpeg":
             return imagejpeg($image, $name . ".jpg", 100);
          case "image/png":
+            imagesavealpha($image, true);
             return imagepng($image, $name . ".png", 9);
          case "image/gif":
             return imagegif($image, $name . ".gif");

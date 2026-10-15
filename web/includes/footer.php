@@ -140,9 +140,16 @@
                         echo "<a href='".$prefs['prefLinkedinURL']."' target='_blank'><i class='".$prefs['prefLinkedinImage']."'></i></a>";
                     }
                 ?>
+                <?php
+                    require_once __DIR__ . '/shared-images.php';
+                    $footerImage = sharedImage('footer-sponsor', $baseURL) ?? [
+                        'src' => 'https://rtdog.witecanvas.com/filestore/images/content/md/3-2_home-page-welcome_1.png',
+                        'alt' => 'Royal Canin',
+                    ];
+                ?>
                 <img class="social-logo"
-                     src="https://rtdog.witecanvas.com/filestore/images/content/md/3-2_home-page-welcome_1.png"
-                     alt="Royal Canin" loading="lazy">
+                     src="<?= htmlspecialchars($footerImage['src'], ENT_QUOTES, 'UTF-8'); ?>"
+                     alt="<?= htmlspecialchars($footerImage['alt'], ENT_QUOTES, 'UTF-8'); ?>" loading="lazy">
             </div>
 
         </div>

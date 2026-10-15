@@ -7,7 +7,10 @@
    error_reporting(E_ALL);
    
    $pageType = 'Edit'; // Add, Edit, Copy, Delete
+   // Legacy CMS includes emit HTML comments; keep the upload response JSON-only.
+   ob_start();
    include('../setting/main-top-files.php');
+   ob_end_clean();
    // main-top-files honours the CMS debug preference and can turn display_errors
    // back on. This endpoint must always return clean JSON to Dropzone.
    ini_set('display_errors', 0);

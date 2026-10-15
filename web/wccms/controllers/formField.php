@@ -1020,12 +1020,11 @@ class FormField
                try { result = JSON.parse(response); } catch (e) { result = null; }
             }
 
-            // The Dropzone success event means the request completed with HTTP
-            // success. Some versions invoke it without the parsed JSON body,
-            // so only turn that into a failed upload when the server has
-            // explicitly reported an error. Treating an empty callback as an
-            // error left successfully saved images off the page until a manual
-            // refresh.
+            if (!result || (result.status !== "success" && result.status !== "error")) {
+               uploadFailed = true;
+               responseElement.textContent = "The server did not confirm the upload. Please reload and try again.";
+               return;
+            }
             if (result && result.status === "error") {
                uploadFailed = true;
                if (Array.isArray(result.errors)) {
