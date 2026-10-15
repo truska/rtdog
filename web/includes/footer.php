@@ -149,7 +149,11 @@
                 ?>
                 <img class="social-logo"
                      src="<?= htmlspecialchars($footerImage['src'], ENT_QUOTES, 'UTF-8'); ?>"
-                     alt="<?= htmlspecialchars($footerImage['alt'], ENT_QUOTES, 'UTF-8'); ?>" loading="lazy">
+                     alt="<?= htmlspecialchars($footerImage['alt'], ENT_QUOTES, 'UTF-8'); ?>"
+                     <?php if (($footerImage['title'] ?? '') !== ''): ?>
+                     title="<?= htmlspecialchars($footerImage['title'], ENT_QUOTES, 'UTF-8'); ?>"
+                     <?php endif; ?>
+                     loading="lazy">
             </div>
 
         </div>

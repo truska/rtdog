@@ -7,7 +7,7 @@ function sharedImage(string $key, string $baseUrl, string $size = 'md'): ?array
 {
     $pdo = Database::pdo();
     try {
-        $query = $pdo->prepare("SELECT g.image, g.folder_name, g.alttag, s.alt_text
+        $query = $pdo->prepare("SELECT g.image, g.folder_name, g.alttag, g.title, s.alt_text
             FROM shared_image s
             INNER JOIN cms_form f ON f.name = 'shared_image' AND f.archived = 0
             INNER JOIN gallery g ON g.record_id = s.id AND g.form_id = f.id
@@ -42,5 +42,6 @@ function sharedImage(string $key, string $baseUrl, string $size = 'md'): ?array
     return [
         'src' => rtrim($baseUrl, '/') . '/filestore/' . implode('/', array_map('rawurlencode', explode('/', $relative))),
         'alt' => trim($image['alttag']) ?: $image['alt_text'],
+        'title' => trim((string) $image['title']),
     ];
 }
